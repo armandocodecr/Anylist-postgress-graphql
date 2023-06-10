@@ -1,42 +1,14 @@
-# version: '3'
-
-# services:
-#   db:
-#     image: postgres:14.8
-#     restart: always
-#     ports:
-#       - 5432:5432
-#     environment:
-#       POSTGRES_USER: postgres
-#       POSTGRES_PASSWORD: MySecr3tPPassword123324
-#       POSTGRES_DB: AnyList
-#       # PGDATA: /var/lib/postgresql/data/pgdata
-#     container_name: anylistDB
-#     # volumes:
-#     #   - ./postgres:/var/lib/postgresql
-
 version: '3.8'
 services:
-  postgres:
+  db:
     image: postgres:15.1-alpine3.17
     container_name: Postgres
     restart: always
     environment:
-      - POSTGRES_USER=armando
-      - POSTGRES_PASSWORD=MySecr3tPPassword123324
-      - POSTGRES_DB=AnyList
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
     ports:
-      - '5432:5432'
-
-  # volumes:
-  #   database:
-  #     driver: local
-
-  pgadmin:
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@mail.com
-      PGADMIN_DEFAULT_PASSWORD: root
-    ports:
-      - 5050:80
+      - '5433:5432'
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
