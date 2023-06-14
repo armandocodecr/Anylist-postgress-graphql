@@ -1,5 +1,5 @@
 import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
-import { Resolver, Query, Mutation, Args, Int, ID } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 import { ItemsService } from './items.service';
@@ -8,6 +8,7 @@ import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 
 import { Item } from './entities/item.entity';
 import { User } from 'src/users/entities/user.entity';
+import { PaginationsArgs, SearchArgs } from 'src/common/dto/args';
 
 @Resolver(() => Item)
 @UseGuards( JwtAuthGuard ) //Nos asegurarnos que el usuario está autenticado
@@ -24,9 +25,11 @@ export class ItemsResolver {
 
   @Query(() => [Item], { name: 'items' })
   async findAll(
-    @CurrentUser() user: User
+    @CurrentUser() user: User,
+    @Args() paginationArgs: PaginationsArgs,
+    @Args() searchArgs: SearchArgs
   ): Promise<Item[]> {
-    return this.itemsService.findAll(user);
+    return this.itemsService.findAll( user, paginationArgs, searchArgs );
   }
 
   @Query(() => Item, { name: 'item' })
