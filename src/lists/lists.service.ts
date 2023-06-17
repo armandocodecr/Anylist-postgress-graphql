@@ -50,7 +50,7 @@ export class ListsService {
       }
     })
 
-    if( list ) throw new NotFoundException(`List with id ${id} not found`)
+    if( !list ) throw new NotFoundException(`List with id ${id} not found`)
 
     return list;
   }
