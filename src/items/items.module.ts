@@ -1,16 +1,20 @@
 import { Module } from '@nestjs/common';
-import { ItemsService } from './items.service';
-import { ItemsResolver } from './items.resolver';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { Item } from './entities/item.entity';
+
+import { ItemsResolver } from './items.resolver';
+
+import { ListItemService } from 'src/list-item/list-item.service';
+import { ItemsService } from './items.service';
 
 @Module({
   providers: [
     ItemsResolver, 
-    ItemsService
+    ItemsService,
   ],
   imports: [
-    TypeOrmModule.forFeature([ Item ])
+    TypeOrmModule.forFeature([ Item ]),
   ],
   exports: [ ItemsService, TypeOrmModule ]
 })
