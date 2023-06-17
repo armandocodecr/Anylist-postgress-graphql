@@ -2,12 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type List {
-  id: ID!
-  name: String!
-  user: User!
-}
-
 type User {
   id: ID!
   fullName: String!
@@ -21,21 +15,33 @@ type User {
   listCount: Int!
 }
 
+type List {
+  id: ID!
+  name: String!
+  user: User!
+  items(offset: Int = 0, limit: Int = 10, search: String): [ListItem!]!
+  totalItems: Float!
+}
+
+type ListItem {
+  id: ID!
+  quantity: Float!
+  completed: Boolean!
+  list: List!
+  item: Item!
+}
+
 type Item {
   id: ID!
   name: String!
   quantityUnits: String
   user: User!
+  listItem: ListItem!
 }
 
 type AuthRespponse {
   token: String!
   user: User!
-}
-
-type ListItem {
-  """Example field (placeholder)"""
-  exampleField: Int!
 }
 
 type Query {
@@ -46,7 +52,7 @@ type Query {
   item(id: ID!): Item!
   lists(offset: Int = 0, limit: Int = 10, search: String): [List!]!
   list(id: ID!): List!
-  listItem(id: Int!): ListItem!
+  listItem(id: ID!): ListItem!
 }
 
 """Estos son los roles permitidos"""
@@ -67,12 +73,11 @@ type Mutation {
   createList(createListInput: CreateListInput!): List!
   updateList(updateListInput: UpdateListInput!): List!
   removeList(id: ID!): List!
+  createListItem(createListItemInput: CreateListItemInput!): ListItem!
+  updateListItem(updateListItemInput: UpdateListItemInput!): ListItem!
 
   """Ejecuta la construcción de la base de datos"""
   executeSeed: Boolean!
-  createListItem(createListItemInput: CreateListItemInput!): ListItem!
-  updateListItem(updateListItemInput: UpdateListItemInput!): ListItem!
-  removeListItem(id: Int!): ListItem!
 }
 
 input SignUpInput {
@@ -116,12 +121,16 @@ input UpdateListInput {
 }
 
 input CreateListItemInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  quantity: Float = 0
+  completed: Boolean = false
+  listId: ID!
+  itemId: ID!
 }
 
 input UpdateListItemInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+  quantity: Float = 0
+  completed: Boolean = false
+  listId: ID
+  itemId: ID
+  id: ID!
 }
