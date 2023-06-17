@@ -1,5 +1,5 @@
 import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
-import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ID, ResolveField, Parent, Int } from '@nestjs/graphql';
 
 import { ListsService } from './lists.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -11,12 +11,19 @@ import { PaginationsArgs, SearchArgs } from 'src/common/dto/args';
 
 import { User } from 'src/users/entities/user.entity';
 import { List } from './entities/list.entity';
+import { ListItem } from 'src/list-item/entities/list-item.entity';
+
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { ListItemService } from 'src/list-item/list-item.service';
+import { ValidRoles } from 'src/auth/enums/valid-roles.enum';
 
 @Resolver(() => List)
 @UseGuards( JwtAuthGuard )
 export class ListsResolver {
-  constructor(private readonly listsService: ListsService) {}
+  constructor(
+    private readonly listsService: ListsService,
+    private readonly listItemService: ListItemService
+  ) {}
 
   @Mutation(() => List)
   createList(
@@ -58,4 +65,24 @@ export class ListsResolver {
   ): Promise<List> {
     return this.listsService.remove(id, user);
   }
+
+  @ResolveField( () => [ListItem], { name: 'items' } )
+  async getListItems(
+    @Parent() list: List, //Esto lo ponemos para obtener datos del padre y saber cuál es la lista padre en este punto
+    @Args() paginationArgs: PaginationsArgs,
+    @Args() searchArgs: SearchArgs
+  ): Promise<ListItem[]> {
+
+    return this.listItemService.findAll( list, paginationArgs, searchArgs )
+
+  }
+
+  @ResolveField( ()=> Number, { name: 'totalItems' } )
+  async itemCount(
+    @CurrentUser([ValidRoles.admin]) adminUser: User,
+    @Parent() list: List //Nos permite tener acceso a los datos del padre
+  ): Promise<Number> {
+    return this.listItemService.countListItemByUser( list );
+  }
+
 }
